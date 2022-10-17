@@ -8,23 +8,75 @@ from eralchemy import render_er
 
 Base = declarative_base()
 
-class Person(Base):
-    __tablename__ = 'person'
+class Follower(Base):
+    __tablename__ = 'follower'
     # Here we define columns for the table person
     # Notice that each column is also a normal Python instance attribute.
     id = Column(Integer, primary_key=True)
-    name = Column(String(250), nullable=False)
+    user_from_id = Column(Integer, ForeignKey('users.id'))
+    user_to_id = Column(Integer, ForeignKey('users.id'))
 
-class Address(Base):
-    __tablename__ = 'address'
+class Users(Base):
+    __tablename__ = 'users'
+    # Here we define columns for the table person
+    # Notice that each column is also a normal Python instance attribute.
+    id = Column(Integer, primary_key=True)
+    user_name = Column(String(250), nullable=False)
+    first_name = Column(String(250), nullable=False)
+    last_name = Column(String(250), nullable=False)
+    password = Column(String(250), nullable=False)
+    email = Column(String(250), nullable=False)
+    relationship_follower = relationship('Follower')
+    relationship_post = relationship('Post')
+    relationship_comment = relationship('Comment')
+    relationship_Post_likes = relationship('Post_likes')
+    relationship_Comment_likes = relationship('Comment_likes')
+
+class Post(Base):
+    __tablename__ = 'post'
+    # Here we define columns for the table person
+    # Notice that each column is also a normal Python instance attribute.
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.id'))
+    relationship_comment = relationship('Comment')
+    relationship_media = relationship('Media')
+    relationship_post_likes = relationship('Post_likes')
+
+class Comment(Base):
+    __tablename__ = 'comment'
+    # Here we define columns for the table person
+    # Notice that each column is also a normal Python instance attribute.
+    id = Column(Integer, primary_key=True)
+    comment_text = Column(String(250), nullable=False)
+    author_id = Column(Integer, ForeignKey('users.id'))
+    post_id = Column(Integer, ForeignKey('post.id'))
+    relationship_comment_likes = relationship('Comment_likes')
+
+class Media(Base):
+    __tablename__ = 'media'
     # Here we define columns for the table address.
     # Notice that each column is also a normal Python instance attribute.
     id = Column(Integer, primary_key=True)
-    street_name = Column(String(250))
-    street_number = Column(String(250))
-    post_code = Column(String(250), nullable=False)
-    person_id = Column(Integer, ForeignKey('person.id'))
-    person = relationship(Person)
+    type = Column(String(250), nullable=False)
+    url = Column(String(250), nullable=False)
+    post_id = Column(Integer, ForeignKey('post.id'))
+
+class Post_likes(Base):
+    __tablename__ = 'post_likes'
+    # Here we define columns for the table address.
+    # Notice that each column is also a normal Python instance attribute.
+    id = Column(Integer, primary_key=True)
+    user_from_id = Column(Integer, ForeignKey('users.id'))
+    post_to_id = Column(Integer, ForeignKey('post.id'))
+
+class Comment_likes(Base):
+    __tablename__ = 'comment_likes'
+    # Here we define columns for the table address.
+    # Notice that each column is also a normal Python instance attribute.
+    id = Column(Integer, primary_key=True)
+    user_from_id = Column(Integer, ForeignKey('users.id'))
+    comment_to_id = Column(Integer, ForeignKey('comment.id'))
+
 
     def to_dict(self):
         return {}
